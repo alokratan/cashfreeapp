@@ -1,3 +1,7 @@
+
+
+
+
 import {
   Box,
   Text,
@@ -13,7 +17,11 @@ import {
   FormControl,
   WarningOutlineIcon,
   Divider,
+  ScrollView,
 } from "native-base";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 import React, { useState } from "react";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -22,59 +30,74 @@ import { baseurl } from "../baseurl";
 
 const Login = ({ navigation }) => {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  
-  const isPasswordValid = (password) => {
-    return password.length >= 8;
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object().shape({
+      email: Yup.string().email("Invalid email").required("Required"),
+      password: Yup.string()
+        .required("Required")
+        .min(8, "Too Short! - should be 8 chars minimum.")
+        .matches(
+          /[a-z]/,
+          "Password must contain at least one lowercase letter."
+        )
+        .matches(
+          /[A-Z]/,
+          "Password must contain at least one uppercase letter."
+        )
+        .matches(/[0-9]/, "Password must contain at least one numeric digit.")
+        .matches(
+          /[!@#$%^&*(),.?":{}|<>]/,
+          "Password must contain at least one special character."
+        ),
+    }),
+    onSubmit: (values, { resetForm }) => {
+      loginfn(values);
+
+      console.log(values);
+      resetForm({ values: "" });
+    },
+  });
+
+  const loginfn = async (values) => {
+    ToastAndroid.show("Please Wait..", 2000);
+    await axios
+      .post(`${baseurl}/login`, {
+        email: values.email,
+        password: values.password,
+      })
+      .then((res) => {
+        console.log(res.data);
+
+        ToastAndroid.show(res.data.message, 2000);
+        setTimeout(() => {
+          navigation.navigate("bottomtabs");
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
+        ToastAndroid.show(error.response.data.error, 2000);
+      });
   };
 
-
-  // const loginfn = async () => {
-    // if (!email || !password) {
-    //   ToastAndroid.show("Please provide both email and password", 2000);
-    //   return;
-    // }
-  //   await axios
-  //     .post(`${baseurl}/login`, {
-  //       email: email,
-  //       userpassword: password,
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data);
-
-  //       ToastAndroid.show(res.data.message, 2000);
-  //       setTimeout(() => {
-  //         navigation.navigate("bottomtabs");
-  //       }, 1000);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error.response.data.error);
-  //       ToastAndroid.show(error.response.data.error, 2000);
-  //     });
-  // };
-
-  const loginfnvin = async () => {
-  
-    if (!email || !password) {
-      ToastAndroid.show("Please provide both email and password", 2000);
-      return;
-    }
-
+  const loginfnvin = async (values) => {
     await axios
       .post(`http://65.1.104.173:443/api/common/login`, {
-        userId: email,
-        password: password,
+        userId: values.email,
+        password: values.password,
       })
       .then((res) => {
         console.log(res.data.res.message);
         ToastAndroid.show(res.data.res.message, 2000);
-        if(res.data.res.statuscode===1){
+        if (res.data.res.statuscode === 1) {
           setTimeout(() => {
             navigation.navigate("bottomtabs");
           }, 1000);
         }
-       
       })
       .catch((error) => {
         console.log(error.response);
@@ -108,105 +131,125 @@ const Login = ({ navigation }) => {
             Sign in to Continue
           </Text>
         </VStack>
+        <ScrollView>
+      
+          <VStack paddingX={5} space={6} pt="6">
+            <FormControl isRequired>
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Email
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                InputRightElement={
+                  <Box paddingX={2}>
+                    <MaterialIcons name="email" size={24} color="#0B0464" />
+                  </Box>
+                }
+                padding={3}
+                type="email"
+                keyboardType="email-address"
+                placeholder="user@gmail.com"
+                color="black"
+                fontSize={17}
+                
+                onChangeText={formik.handleChange("email")}
+                onBlur={formik.handleBlur("email")}
+                value={formik.values.email}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.email && formik.touched.email ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.email}
+                </Text>
+              ) : null}
+            </FormControl>
 
-        <VStack paddingX={5} space={6} pt="6">
-          <FormControl isRequired>
-            <FormControl.Label paddingY={2}>
-              <Text fontWeight={600} fontSize={17}>
-                Email
-              </Text>
-            </FormControl.Label>
-            <Input
-              variant="filled"
-              _focus={{
-                bg: "purple.50",
-                borderBottomWidth: 2,
-                borderWidth: 0,
-                borderColor: "#5521C2",
-              }}
-              InputRightElement={
-                <Box paddingX={2}>
-                  <MaterialIcons name="email" size={24} color="#0B0464" />
-                </Box>
-              }
-              padding={3}
-              type="email"
-              placeholder="user@gmail.com"
-              color="black"
-              marginBottom={4}
-              fontSize={17}
-              value={email}
-              onChangeText={(e) => setEmail(e)}
-              borderBottomColor="#0B0464"
-            />
-          </FormControl>
+            <FormControl isRequired>
+              <FormControl.Label paddingY={2}>
+                <Text fontSize={17} fontWeight={600}>
+                  Password
+                </Text>
+              </FormControl.Label>
 
-          <FormControl isRequired>
-            <FormControl.Label paddingY={2}>
-              <Text fontSize={17} fontWeight={600}>
-                Password
-              </Text>
-            </FormControl.Label>
+              <Input
+                variant="filled"
+                type={show ? "text" : "password"}
+                padding={3}
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                InputRightElement={
+                  <Pressable paddingX={2} onPress={() => setShow(!show)}>
+                    <MaterialIcons
+                      name={show ? "visibility" : "visibility-off"}
+                      size={24}
+                      color="black"
+                    />
+                  </Pressable>
+                }
+                placeholder="********"
+                color="black"
+                fontSize={17}
+                onChangeText={formik.handleChange("password")}
+                onBlur={formik.handleBlur("password")}
+                value={formik.values.password}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.password && formik.touched.password ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.password}
+                </Text>
+              ) : null}
+            </FormControl>
 
-            <Input
-              variant="filled"
-              type={show ? "text" : "password"}
-              padding={3}
-              _focus={{
-                bg: "purple.50",
-                borderBottomWidth: 2,
-                borderWidth: 0,
-                borderColor: "#5521C2",
-              }}
-              InputRightElement={
-                <Pressable paddingX={2} onPress={() => setShow(!show)}>
-                  <MaterialIcons
-                    name={show ? "visibility" : "visibility-off"}
-                    size={24}
-                    color="black"
-                  />
-                </Pressable>
-              }
-              placeholder="********"
-              color="black"
-              fontSize={17}
-              value={password}
-              onChangeText={(e) => setPassword(e)}
-              borderBottomColor="#0B0464"
-            />
-            {!isPasswordValid(password) && (
-        <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
-          Password must be at least 8 characters long.
-        </FormControl.ErrorMessage>
-      )}
-          </FormControl>
-
-          <HStack justifyContent={"space-between"}>
-            <Pressable onPress={() => navigation.navigate("registers")}>
+            <HStack justifyContent={"space-between"}>
+              <Pressable onPress={() => navigation.navigate("registers")}>
+                <Text fontSize={18} underline>
+                  New User
+                </Text>
+              </Pressable>
               <Text fontSize={18} underline>
-                New User
+                Troble Logging in?
               </Text>
-            </Pressable>
-            <Text fontSize={18} underline>
-              Troble Logging in?
-            </Text>
-          </HStack>
+            </HStack>
 
-          <Button
-            onPress={loginfnvin}
-            _pressed={{
-              bg: "#0009",
-            }}
-            marginX={10}
-            marginY={10}
-            rounded={10}
-            bg="black"
-          >
-            <Text marginY={1} color="white" bold fontSize={20}>
-              LOGIN
-            </Text>
-          </Button>
-        </VStack>
+            <Button
+              onPress={formik.handleSubmit}
+              _pressed={{
+                bg: "#0009",
+              }}
+              marginX={10}
+              marginY={10}
+              rounded={10}
+              bg="black"
+            >
+              <Text marginY={1} color="white" bold fontSize={20}>
+                LOGIN
+              </Text>
+            </Button>
+          </VStack>
+     </ScrollView>
 
         <Center position={"relative"} top={5} zIndex={2}>
           <Text

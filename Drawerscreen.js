@@ -7,14 +7,13 @@ import Verify from './screens/Verify';
 import Beneficiary from './screens/Beneficiary';
 import ForgotPassword from './screens/ForgotPassword';
 import Bottomtabs from './screens/Bottomtabs'
-import Login2 from './screens/Login2';
+
 const Drawer = createDrawerNavigator();
 const Drawerscreen = () => {
     
   return (
     <Drawer.Navigator >
     <Drawer.Screen options={{ headerShown: false }} name="logins" component={Login} />
-    <Drawer.Screen options={{ headerShown: false }} name="logins2" component={Login2} />
     
     <Drawer.Screen options={{ headerShown: false }} name="registers" component={Register} />
     {/* <Drawer.Screen options={{ headerShown: false }} name="remitter" component={Remitter} /> */}
