@@ -1,0 +1,103 @@
+[
+    {
+      "transaction": "completed",
+      "amount": "$34",
+      "date": "15-SEP-2023"
+    },
+    {
+      "transaction": "pending",
+      "amount": "$50",
+      "date": "16-SEP-2023"
+    },
+    {
+      "transaction": "failed",
+      "amount": "$20",
+      "date": "17-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$45",
+      "date": "18-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$60",
+      "date": "19-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$75",
+      "date": "20-SEP-2023"
+    },
+    {
+      "transaction": "pending",
+      "amount": "$30",
+      "date": "21-SEP-2023"
+    },
+    {
+      "transaction": "failed",
+      "amount": "$10",
+      "date": "22-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$25",
+      "date": "23-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$55",
+      "date": "24-SEP-2023"
+    },
+    {
+      "transaction": "pending",
+      "amount": "$40",
+      "date": "25-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$70",
+      "date": "26-SEP-2023"
+    },
+    {
+      "transaction": "failed",
+      "amount": "$15",
+      "date": "27-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$65",
+      "date": "28-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$80",
+      "date": "29-SEP-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$90",
+      "date": "30-SEP-2023"
+    },
+    {
+      "transaction": "pending",
+      "amount": "$35",
+      "date": "01-OCT-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$95",
+      "date": "02-OCT-2023"
+    },
+    {
+      "transaction": "failed",
+      "amount": "$5",
+      "date": "03-OCT-2023"
+    },
+    {
+      "transaction": "completed",
+      "amount": "$85",
+      "date": "04-OCT-2023"
+    }
+  ]
+  
