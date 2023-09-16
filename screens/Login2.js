@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import Axios from 'axios';
 
+import { userapi } from '../userapi';
 export default function Login2() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,16 +13,16 @@ export default function Login2() {
 
   const handleLogin = async () => {
     try {
-      const response = await Axios.post('http://52.66.173.135:8000/user/login/', {
-        username,
-        password,
+      const response = await Axios.post('https://altblogserver.vercel.app/altblog/login', {
+        email:username,
+        password:password,
       });
 
       const data = response.data;
 
       if (response.status === 200) {
-        console.log(data.status);
-        alert(data.status);
+         console.log(data.message);
+         alert(data.message);
       } else {
         alert('Login failed. Please check your credentials.');
       }
@@ -29,6 +30,9 @@ export default function Login2() {
       console.error('Error:', error);
     }
   };
+
+
+
   const handleLogin2 = async () => {
     try {
       const response = await Axios.post('http://52.66.173.135:8000/login', {
@@ -49,28 +53,20 @@ export default function Login2() {
     }
   };
   const handleLoginv = async () => {
-    try {
-      const response = await Axios.post('http://65.1.104.173:443/api/common/login', {
-        userId:emailv,
-        password:passwordv,
-      });
-
-      const data = response.data;
-
-      if (response.status === 200) {
-        console.log(data.res.message);
-        alert(data.res.message);
-      } else {
-        alert('Login failed. Please check your credentials.');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
+    userapi({
+      userId: emailv,
+      password: passwordv,
+    }).then((res)=>{
+console.log(res.data.res.message)
+alert(res.data.res.message)
+    }).catch((err)=>{
+      console.log(err);
+    })
   };
 
   return (
     <View>
-      <Text>golden eye </Text>
+      <Text>blog </Text>
       <TextInput
         placeholder="Username"
         value={username}
