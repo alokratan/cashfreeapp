@@ -66,7 +66,9 @@ const Register = ({ navigation }) => {
    alert("data not found")
 
   }
-const registerfnt=()=>{console.log("please accept terms & conditions")}
+const registerfnt=()=>{
+  ToastAndroid.show("please accept terms & conditions", 2000);
+  console.log("please accept terms & conditions")}
   const registerfn = async () => {
     await axios
       .post(`${baseurl}/register`, {
@@ -108,9 +110,9 @@ const registerfnt=()=>{console.log("please accept terms & conditions")}
         console.log(res.data.res.Message);
 
         ToastAndroid.show(res.data.res.Message, 2000);
-        // setTimeout(() => {
-        //   navigation.navigate("logins");
-        // }, 1000);
+        setTimeout(() => {
+          navigation.navigate("logins");
+        }, 1000);
      
       })
       .catch((error) => {
