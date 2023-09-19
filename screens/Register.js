@@ -36,18 +36,8 @@ import CountryPicker from "./components/CountryPicker";
 
 const Register = ({ navigation }) => {
   const [show, setShow] = useState(false);
-  // const [fullname, setFullname] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [phone, setPhone] = useState("");
-  const [purpose, setPurpose] = useState("");
-  const [country, setCountry] = useState("");
-  // const [address, setAddress] = useState("");
-  // const [phonecode,setPhonecode]=useState("");
-  // const [pannumber,setPannumber]=useState("");
-  // const [password, setPassword] = useState("");
   const [isSelected, setIsSelected] = useState(false);
   const [openmodal,setOpenmodal]=useState(false);
-  
   const [countries, setCountries] = useState(Coundet);
   const [selectedCountry, setSelectedCountry] = useState('');
 
@@ -87,7 +77,8 @@ const Register = ({ navigation }) => {
     }),
     onSubmit: (values, { resetForm }) => {
    
-      registerfn(values)
+      // registerfn(values)
+      registerfnvin(values)
       console.log(values)
       resetForm({ values: "" });
     },
@@ -112,7 +103,7 @@ const registerfnt=()=>{console.log("please accept terms & conditions")}
         email: values.email,
         phone: values.phone,
         panno:values.pannumber,
-        purpose: "Education",
+        purpose: "EDUCATION",
         country: selectedCountry,
         address:values.address,
         password: values.password
@@ -134,20 +125,20 @@ const registerfnt=()=>{console.log("please accept terms & conditions")}
 
   const registerfnvin = async (values) => {
     await axios
-      .post(`http://65.1.104.173:443/api/common/register`, {
+      .post(`https://geyeapp.consultit.co.in:8080/register`, {
         username: values.fullname,
         email: values.email,
         mobile: values.phone,
         panno:values.pannumber,
-        purpose: "Education",
+        purpose: "EDUCATION",
         countrycode: selectedCountry,
         address:values.address,
         password: values.password,
       })
       .then((res) => {
-        console.log(res.data.res.Message);
+        console.log(res.data.message);
 
-        ToastAndroid.show(res.data.res.Message, 2000);
+        ToastAndroid.show(res.data.message, 2000);
         setTimeout(() => {
           navigation.navigate("logins");
         }, 2000);

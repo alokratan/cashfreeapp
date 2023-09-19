@@ -5,6 +5,8 @@ import { NativeBaseProvider } from 'native-base';
 
 import FormikFormUsingHookExample from './screens/Formiklog';
 import Drawerscreen from './Drawerscreen';
+import Orders from './screens/bottomtabs/homenested/Orders';
+import Docpic from './screens/bottomtabs/homenested/Docpic';
 
 
 const Stack = createStackNavigator();
@@ -12,7 +14,8 @@ const App = () => {
   return (
 <NativeBaseProvider>
     <NavigationContainer>
-      {/* <Home/> */}
+    {/* <Docpic/> */}
+      {/* <Orders/> */}
       <Drawerscreen/>
       {/* <FormikFormUsingHookExample/> */}
       {/* <Recipient/> */}

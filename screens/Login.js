@@ -21,7 +21,7 @@ import {
 } from "native-base";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from "react";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
@@ -56,13 +56,14 @@ const Login = ({ navigation }) => {
         ),
     }),
     onSubmit: (values, { resetForm }) => {
-      loginfn(values);
-
-      console.log(values);
+      // loginfn(values);
+      loginfnvin(values);
+      // console.log(values);
       resetForm({ values: "" });
     },
   });
 
+ 
   const loginfn = async (values) => {
     ToastAndroid.show("Please Wait..", 2000);
     await axios
@@ -71,8 +72,8 @@ const Login = ({ navigation }) => {
         password: values.password,
       })
       .then((res) => {
-        console.log(res.data);
-
+        console.log("hi this is id:",res.data.uid)
+        // storeData(res.data.uid)
         ToastAndroid.show(res.data.message, 2000);
         setTimeout(() => {
           navigation.navigate("bottomtabs");
@@ -84,16 +85,27 @@ const Login = ({ navigation }) => {
       });
   };
 
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem(uid, value);
+    } catch (e) {
+      console.log(e)
+    }
+  };
+
   const loginfnvin = async (values) => {
     await axios
-      .post(`http://65.1.104.173:443/api/common/login`, {
+      .post(`https://geyeapp.consultit.co.in:8080/login`, {
         userId: values.email,
         password: values.password,
       })
       .then((res) => {
-        console.log(res.data.res.message);
-        ToastAndroid.show(res.data.res.message, 2000);
-        if (res.data.res.statuscode === 1) {
+        console.log("hi this is id:",res.data)
+        // storeData(res)
+        AsyncStorage.setItem('uid', res.data.uid);
+        // console.log("Login res:",res.data.res.message);
+        ToastAndroid.show(res.data.message, 2000);
+        if (res.data.statuscode === 1) {
           setTimeout(() => {
             navigation.navigate("bottomtabs");
           }, 1000);
@@ -101,7 +113,7 @@ const Login = ({ navigation }) => {
       })
       .catch((error) => {
         console.log(error.response);
-        // ToastAndroid.show(error.response.data.error, 2000);
+        ToastAndroid.show(error.response.data.error, 2000);
       });
   };
 

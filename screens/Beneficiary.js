@@ -23,26 +23,52 @@ import { View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 // import CON from "../country.json";
 import axios from "axios";
-import { baseurl } from "../baseurl";
+import { baseurl, baseurl2 } from "../baseurl";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import CountryPicker from "./components/CountryPicker";
 import Coundet from "../country.json";
 const Beneficiary = ({ navigation }) => {
   const [show, setShow] = useState(false);
+  const [accountnumber, setAccountnumber] = useState("");
+  const [accountholdername, setAccountholdername] = useState("");
+  const [bankname, setBankname] = useState("");
+  const [bankaddress, setBankaddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [address, setAddress] = useState("");
+  const [swiftcode, setSwiftcode] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [routigno, setRoutigno] = useState("");
   const [account_Type, setAccount_Type] = useState("");
+  const [ibancode, setIbancode] = useState("");
   const [country, setCountry] = useState("");
   const [country2, setCountry2] = useState("");
   const [password, setPassword] = useState("");
   const [coun, setCoun] = useState("");
-
   const [selectedcode, setSelectedcode] = useState("");
-
   const [countries, setCountries] = useState(Coundet);
-  const [bankcountries, setBankcountries] = useState(Coundet);
+  
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedBankCountry, setSelectedBankCountry] = useState("");
+
+  const registerfn2 = async () => {
+    console.log(
+      bankname,
+      selectedBankCountry,
+      bankaddress,
+      swiftcode,
+      ibancode,
+      accountholdername,
+      accountnumber,
+      selectedCountry,
+      state,
+      city,
+      address,
+      routigno
+    );
+    ToastAndroid.show("Please Wait..", 2000);
+  };
 
   const handleselectcode = (itemValue) => {
     setSelectedcode(itemValue);
@@ -54,9 +80,10 @@ const Beneficiary = ({ navigation }) => {
     setSelectedCountry(itemValue);
   };
 
-  const registerfn = async () => {
+  const registerbeneffn = async () => {
+    
     await axios
-      .post(`${baseurl}/register`, {
+      .post(`${baseurl2}/beneficiaryr`, {
         username: email,
         userpassword: password,
         mobilenumber: phone,
@@ -75,14 +102,6 @@ const Beneficiary = ({ navigation }) => {
         console.log(error.response.data.error);
         ToastAndroid.show(error.response.data.error, 2000);
       });
-  };
-
-  const registerfn2 = async () => {
-    registerfn();
-
-    console.log(email, password, phone, account_Type, country);
-
-    ToastAndroid.show("Please Wait..", 2000);
   };
 
   const countryfn = (e) => {
@@ -117,6 +136,33 @@ const Beneficiary = ({ navigation }) => {
             <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
+                  Bank Name
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <MaterialIcons name="email" size={24} color="#0B0464" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="Silicon Valley Bank"
+                color="black"
+                marginBottom={4}
+                fontSize={17}
+                value={bankname}
+                onChangeText={(e) => setBankname(e)}
+                borderBottomColor="#0B0464"
+              />
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
                   Bank Country
                 </Text>
               </FormControl.Label>
@@ -149,7 +195,7 @@ const Beneficiary = ({ navigation }) => {
 
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
-                  Account Holder Name
+                  Bank Address
                 </Text>
               </FormControl.Label>
               <Input
@@ -166,68 +212,12 @@ const Beneficiary = ({ navigation }) => {
                 //   </Box>
                 // }
                 padding={3}
-                placeholder="Full Name"
+                placeholder="Bank Address"
                 color="black"
                 marginBottom={4}
                 fontSize={17}
-                // value={email}
-                // onChangeText={e=>setEmail(e)}
-                borderBottomColor="#0B0464"
-              />
-
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Bank Name
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                // InputRightElement={
-                //   <Box paddingX={2}>
-                //     <MaterialIcons name="email" size={24} color="#0B0464" />
-                //   </Box>
-                // }
-                padding={3}
-                placeholder="Silicon Valley Bank"
-                color="black"
-                marginBottom={4}
-                fontSize={17}
-                // value={email}
-                // onChangeText={e=>setEmail(e)}
-                borderBottomColor="#0B0464"
-              />
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Account Number
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                // InputRightElement={
-                //   <Box paddingX={2}>
-                //     <Ionicons name="call" size={24} color="black" />
-                //   </Box>
-                // }
-                padding={3}
-                placeholder="834989384"
-                color="black"
-                keyboardType="phone-pad"
-                value={phone}
-                onChangeText={(e) => setPhone(e)}
-                marginBottom={4}
-                fontSize={17}
+                value={bankaddress}
+                onChangeText={(e) => setBankaddress(e)}
                 borderBottomColor="#0B0464"
               />
               <FormControl.Label paddingY={2}>
@@ -253,8 +243,8 @@ const Beneficiary = ({ navigation }) => {
                 color="black"
                 marginBottom={4}
                 fontSize={17}
-                // value={email}
-                // onChangeText={e=>setEmail(e)}
+                value={swiftcode}
+                onChangeText={(e) => setSwiftcode(e)}
                 borderBottomColor="#0B0464"
               />
               <FormControl.Label paddingY={2}>
@@ -280,6 +270,7 @@ const Beneficiary = ({ navigation }) => {
                   <Picker.Item label="Bsb" value="Bsb" />
                 </Picker>
               </View>
+
               <Input
                 variant="filled"
                 _focus={{
@@ -298,13 +289,13 @@ const Beneficiary = ({ navigation }) => {
                 color="black"
                 marginBottom={4}
                 fontSize={17}
-                // value={email}
-                // onChangeText={e=>setEmail(e)}
+                value={ibancode}
+                onChangeText={(e) => setIbancode(e)}
                 borderBottomColor="#0B0464"
               />
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
-                  Bank Address
+                  Account Holder Name
                 </Text>
               </FormControl.Label>
               <Input
@@ -321,14 +312,44 @@ const Beneficiary = ({ navigation }) => {
                 //   </Box>
                 // }
                 padding={3}
-                placeholder="Bank Address"
+                placeholder="Full Name"
                 color="black"
                 marginBottom={4}
                 fontSize={17}
-                // value={email}
-                // onChangeText={e=>setEmail(e)}
+                value={accountholdername}
+                onChangeText={(e) => setAccountholdername(e)}
                 borderBottomColor="#0B0464"
               />
+
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Account Number
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <Ionicons name="call" size={24} color="black" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="834989384"
+                color="black"
+                keyboardType="phone-pad"
+                value={accountnumber}
+                onChangeText={(e) => setAccountnumber(e)}
+                marginBottom={4}
+                fontSize={17}
+                borderBottomColor="#0B0464"
+              />
+
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Country
@@ -340,6 +361,61 @@ const Beneficiary = ({ navigation }) => {
                 handleChanges={handleChangecountry}
               />
 
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  State
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <MaterialIcons name="email" size={24} color="#0B0464" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="State"
+                color="black"
+                marginBottom={4}
+                fontSize={17}
+                value={state}
+                onChangeText={(e) => setState(e)}
+                borderBottomColor="#0B0464"
+              />
+
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  City
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <MaterialIcons name="email" size={24} color="#0B0464" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="City"
+                color="black"
+                marginBottom={4}
+                fontSize={17}
+                value={city}
+                onChangeText={(e) => setCity(e)}
+                borderBottomColor="#0B0464"
+              />
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Address
@@ -363,71 +439,39 @@ const Beneficiary = ({ navigation }) => {
                 color="black"
                 marginBottom={4}
                 fontSize={17}
-                // value={email}
-                // onChangeText={e=>setEmail(e)}
+                value={address}
+                onChangeText={(e) => setAddress(e)}
                 borderBottomColor="#0B0464"
               />
 
-              <HStack w="full" justifyContent={"space-between"}>
-                <VStack w="45%">
-                  <FormControl.Label paddingY={2}>
-                    <Text fontWeight={600} fontSize={17}>
-                      State
-                    </Text>
-                  </FormControl.Label>
-                  <Input
-                    variant="filled"
-                    _focus={{
-                      bg: "purple.50",
-                      borderBottomWidth: 2,
-                      borderWidth: 0,
-                      borderColor: "#5521C2",
-                    }}
-                    // InputRightElement={
-                    //   <Box paddingX={2}>
-                    //     <MaterialIcons name="email" size={24} color="#0B0464" />
-                    //   </Box>
-                    // }
-                    padding={3}
-                    placeholder="State"
-                    color="black"
-                    marginBottom={4}
-                    fontSize={17}
-                    // value={email}
-                    // onChangeText={e=>setEmail(e)}
-                    borderBottomColor="#0B0464"
-                  />
-                </VStack>
-                <VStack w="45%">
-                  <FormControl.Label paddingY={2}>
-                    <Text fontWeight={600} fontSize={17}>
-                      City
-                    </Text>
-                  </FormControl.Label>
-                  <Input
-                    variant="filled"
-                    _focus={{
-                      bg: "purple.50",
-                      borderBottomWidth: 2,
-                      borderWidth: 0,
-                      borderColor: "#5521C2",
-                    }}
-                    // InputRightElement={
-                    //   <Box paddingX={2}>
-                    //     <MaterialIcons name="email" size={24} color="#0B0464" />
-                    //   </Box>
-                    // }
-                    padding={3}
-                    placeholder="City"
-                    color="black"
-                    marginBottom={4}
-                    fontSize={17}
-                    // value={email}
-                    // onChangeText={e=>setEmail(e)}
-                    borderBottomColor="#0B0464"
-                  />
-                </VStack>
-              </HStack>
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Routing Number
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <Ionicons name="call" size={24} color="black" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="834989384"
+                color="black"
+                keyboardType="phone-pad"
+                value={routigno}
+                onChangeText={(e) => setRoutigno(e)}
+                marginBottom={4}
+                fontSize={17}
+                borderBottomColor="#0B0464"
+              />
             </FormControl>
 
             <></>

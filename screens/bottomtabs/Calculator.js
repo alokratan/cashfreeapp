@@ -19,17 +19,6 @@ const Calculator = () => {
   const [countries, setCountries] = useState(Coun);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCountry2, setSelectedCountry2] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // useEffect(() => {
-  //   axios.get('https://gist.githubusercontent.com/DmytroLisitsyn/1c31186e5b66f1d6c52da6b5c70b12ad/raw/2bc71083a77106afec2ec37cf49d05ee54be1a22/country_dial_info.json')
-  //     .then(response => {
-  //       setCountries(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching countries:', error);
-  //     });
-  // }, []);
 
   const handleChange = (itemValue) => {
     setSelectedCountry(itemValue);
