@@ -8,6 +8,7 @@ import {
   HStack,
   Heading,
   Input,
+  Modal,
   Pressable,
   ScrollView,
   StatusBar,
@@ -17,10 +18,11 @@ import {
 } from "native-base";
 import React, { useEffect, useState } from "react";
 import Coun from "../../../country.json";
-import { View } from "react-native";
+import { ToastAndroid, View } from "react-native";
 import { remit } from "../../../userapi";
 import { benef } from "../../../userapi";
-const Orders = () => {
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const Orders = ({navigation}) => {
   const [countries, setCountries] = useState(Coun);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectremitter, setSelectremitter] = useState([]);
@@ -29,12 +31,21 @@ const Orders = () => {
   const [selectedbenef, setSelectedbenef] = useState();
   const [selectedrelation, setSelectedrelation] = useState();
   const [selectedpaymentmode, setSelectedpaymentmode] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [uid,setUid]=useState("")
 
   const handleChange = (itemValue) => {
     setSelectedCountry(itemValue);
   };
 
+  const toggleModal = () => {
+    ToastAndroid.show("Apologies, work is in progress.", 2000);
+    navigation.goBack();
+    // setIsModalOpen(!isModalOpen);
+  };
+
   useEffect(() => {
+
     // Fetch remitters when the component mounts
     const fetchRemitters = async () => {
       try {
@@ -60,7 +71,16 @@ const Orders = () => {
     };
 
     fetchBenef();
+    asyncfn();
   }, []);
+  const asyncfn=async ()=>{
+    const value1 = await AsyncStorage.getItem('uid');
+    const value2 = await AsyncStorage.getItem('remitterid');
+    const value3 = await AsyncStorage.getItem('beneficiaryid');
+    const obj= {value1,value2,value3}
+    console.log(obj)
+    setUid(obj)
+  }
 
   return (
     <>
@@ -69,6 +89,28 @@ const Orders = () => {
         backgroundColor="#5521C2"
         barStyle="light-content"
       />
+       <Modal isOpen={isModalOpen} onClose={false}>
+            
+            <Modal.Content>
+              <Modal.Header>Order Screen
+             
+
+              </Modal.Header>
+           
+           
+              <Modal.Body>
+              <Text paddingY={2} color="red.500" bold >Apologies, work is in progress.</Text>
+
+                <Text>User/Customer ID:{JSON.stringify(uid.value1)}</Text>
+                <Text>Selected Remitter ID:{JSON.stringify(uid.value2)}</Text>
+                <Text>Selected Beneficiary ID:{JSON.stringify(uid.value3)}</Text>
+              
+              </Modal.Body>
+              <Modal.Footer>
+                <Button onPress={toggleModal}>Go Back</Button>
+              </Modal.Footer>
+            </Modal.Content>
+          </Modal>
       <Box flex={1} justifyContent="space-between" safeAreaTop bg="white">
         <HStack
           bg={"#5521C2"}

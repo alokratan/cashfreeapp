@@ -4,7 +4,7 @@ import React from 'react'
 const Manage = () => {
   return (
     <View>
-      <Text>manage</Text>
+      <Text>Available Soon</Text>
     </View>
   )
 }

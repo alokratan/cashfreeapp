@@ -14,6 +14,7 @@ import {
   WarningOutlineIcon,
   Divider,
   ScrollView,
+  Spinner
 } from "native-base";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -26,6 +27,7 @@ import { baseurl, baseurl2 } from "../baseurl";
 
 const Login = ({ navigation }) => {
   const [show, setShow] = useState(false);
+  const [isloading,setIsloading]=useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -61,6 +63,7 @@ const Login = ({ navigation }) => {
 
   const loginfn = async (values) => {
     ToastAndroid.show("Please Wait..", 2000);
+    <Spinner color="blue" />
     await axios
       .post(`${baseurl}/login`, {
         email: values.email,
@@ -81,29 +84,31 @@ const Login = ({ navigation }) => {
   };
 
   const loginfnvin = async (values) => {
-    await axios
-      .post(`${baseurl2}/login`, {
+    try {
+      const res = await axios.post(`${baseurl2}/login`, {
         userId: values.email,
         password: values.password,
-      })
-      .then((res) => {
-        console.log("hi this is id:", res.data);
-        // storeData(res)
-
-        // console.log("Login res:",res.data.res.message);
-        ToastAndroid.show(res.data.message, 2000);
-        if (res.data.statuscode === 1) {
-          AsyncStorage.setItem("uid", res.data.uid);
-          setTimeout(() => {
-            navigation.navigate("bottomtabs");
-          }, 1000);
-        }
-      })
-      .catch((error) => {
-        console.log(error.response);
-        ToastAndroid.show(error.response.data.error, 2000);
       });
+  
+      console.log("hi this is id:", res.data);
+  
+      // Display a spinner here if necessary
+      // <Spinner color="blue" />
+  
+      ToastAndroid.show(res.data.message, 2000);
+  
+      if (res.data.statuscode === 1) {
+        AsyncStorage.setItem("uid", res.data.uid);
+        setTimeout(() => {
+          navigation.navigate("bottomtabs");
+        }, 1000);
+      }
+    } catch (error) {
+      console.log(error.response);
+      ToastAndroid.show("Make Sure Server Is Live", 2000);
+    }
   };
+  
 
   return (
     <>

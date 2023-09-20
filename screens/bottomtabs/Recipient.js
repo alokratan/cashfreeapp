@@ -16,7 +16,7 @@ const Recipient = () => {
     <HStack justifyContent="space-between">
       <VStack>
         <Heading fontSize={20} mb={2} color="#000000">
-          Transaction {item.transaction}
+          Order Status {item.transaction}
         </Heading>
         <Text fontSize={14} color="#000000">
           {item.date}

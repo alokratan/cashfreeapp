@@ -60,7 +60,7 @@ const ViewRemit = ({ navigation }) => {
   }, []);
 
   const continuefn=()=>{
-    ToastAndroid.show("Please Wait...", 2000);
+    
     console.log("Remitter id:",select)
     if(select){
       AsyncStorage.setItem('remitterid', JSON.stringify(select));
@@ -68,7 +68,8 @@ const ViewRemit = ({ navigation }) => {
         navigation.navigate("viewbenef");
       }, 1000);
     }else{
-      ToastAndroid.show("Select Remitter , If have not remitter Create new", 2000);
+      ToastAndroid.show("Select a Remitter. If you do not have a remitter, create a new one.", 2000);
+
     }
    
   }

@@ -32,22 +32,6 @@ import Coundet from "../../../country.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const Beneficiary = ({ navigation }) => {
   const [valueuid, setValueuid] = useState("");
-  const [show, setShow] = useState(false);
-  const [accountnumber, setAccountnumber] = useState("");
-  const [accountholdername, setAccountholdername] = useState("");
-  const [bankname, setBankname] = useState("");
-  const [bankaddress, setBankaddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [address, setAddress] = useState("");
-  const [swiftcode, setSwiftcode] = useState("");
-  const [routigno, setRoutigno] = useState("");
-  const [account_Type, setAccount_Type] = useState("");
-  const [ibancode, setIbancode] = useState("");
-  const [country, setCountry] = useState("");
-  const [country2, setCountry2] = useState("");
-
-  const [coun, setCoun] = useState("");
   const [selectedcode, setSelectedcode] = useState("Iban");
   const [countries, setCountries] = useState(Coundet);
 
@@ -73,18 +57,18 @@ const Beneficiary = ({ navigation }) => {
     validationSchema: Yup.object().shape({
       Ac_Holder_Name: Yup.string()
         .min(3, "Too Short!")
-        .max(50, "Too Long!")
+        .max(20, "Too Long!")
         .required("Required"),
 
       State: Yup.string()
         .matches(/^[A-Za-z0-9 .,-]*$/, "Invalid characters")
         .min(3, "Too Short!")
-        .max(200, "Too Long!")
+        .max(100, "Too Long!")
         .required("Required"),
-      city: Yup.string()
+      City: Yup.string()
         .matches(/^[A-Za-z0-9 .,-]*$/, "Invalid characters")
         .min(3, "Too Short!")
-        .max(200, "Too Long!")
+        .max(100, "Too Long!")
         .required("Required"),
       Address: Yup.string()
         .min(3, "Too Short!")
@@ -92,11 +76,11 @@ const Beneficiary = ({ navigation }) => {
         .required("Required"),
       Bank_Name: Yup.string()
         .min(3, "Too Short!")
-        .max(200, "Too Long!")
+        .max(100, "Too Long!")
         .required("Required"),
       Bank_Address: Yup.string()
         .min(3, "Too Short!")
-        .max(200, "Too Long!")
+        .max(100, "Too Long!")
         .required("Required"),
       Ac_Number: Yup.string()
         .required("Required")
@@ -112,9 +96,7 @@ const Beneficiary = ({ navigation }) => {
 
       routing_number: Yup.string()
         .required("Required")
-        .min(6, "Too Short!")
-        .max(15, "Too Long!"),
-        // .matches(/^\\d*$/, "Invalid Routing Number"),
+      .matches(/^((0[0-9])|(1[0-2])|(2[1-9])|(3[0-2])|(6[1-9])|(7[0-2])|80)([0-9]{7})$/, "Invalid Routing Number"),
       postal_code: Yup.string()
         .required("Required")
         .min(6, "Too Short!")
@@ -123,28 +105,12 @@ const Beneficiary = ({ navigation }) => {
     onSubmit: (values) => {
       // myremitterfn(values);
       mybeneffnvin(values);
-
+      console.log(values);
       // resetForm({ values: "" });
     },
   });
 
-  const registerfn2 = async (val) => {
-    console.log(
-      bankname,
-      selectedBankCountry,
-      bankaddress,
-      swiftcode,
-      ibancode,
-      accountholdername,
-      accountnumber,
-      selectedCountry,
-      state,
-      city,
-      address,
-      routigno
-    );
-    ToastAndroid.show("Please Wait..", 2000);
-  };
+ 
 
   const handleselectcode = (itemValue) => {
     setSelectedcode(itemValue);
@@ -191,7 +157,7 @@ const Beneficiary = ({ navigation }) => {
         State: val.State,
         City: val.City,
         Address: val.Address,
-        swiftcode: val.swiftcode,
+        Ifsc_Code: val.swiftcode,
         Bank_Country: selectedBankCountry,
         Bank_Address: val.Bank_Address,
         iban: val.iban,
@@ -220,12 +186,7 @@ const Beneficiary = ({ navigation }) => {
         ToastAndroid.show(error.response.data.message, 2000);
       });
   };
-  const countryfn = (e) => {
-    setCountry(e);
-  };
-  const countryfn2 = (e) => {
-    setCountry2(e);
-  };
+ 
   return (
     <>
       <StatusBar
@@ -274,7 +235,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="Bank Name"
                 color="black"
-              
                 fontSize={17}
                 onChangeText={formik.handleChange("Bank_Name")}
                 onBlur={formik.handleBlur("Bank_Name")}
@@ -298,16 +258,16 @@ const Beneficiary = ({ navigation }) => {
                   Bank Country
                 </Text>
               </FormControl.Label>
-             
+
               <CountryPicker
                 selectedCountry={selectedBankCountry}
                 country={countries}
                 handleChanges={handleChangebankcountry}
               />
-                          </FormControl>
-            
-              {/* Bank Address */}
-              <FormControl>
+            </FormControl>
+
+            {/* Bank Address */}
+            <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Bank Address
@@ -324,14 +284,13 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="Bank Address"
                 color="black"
-              
                 fontSize={17}
                 onChangeText={formik.handleChange("Bank_Address")}
                 onBlur={formik.handleBlur("Bank_Address")}
                 value={formik.values.Bank_Address}
                 borderBottomColor="#0B0464"
               />
-              
+
               {formik.errors.Bank_Address && formik.touched.Bank_Address ? (
                 <Text
                   paddingLeft={2}
@@ -342,10 +301,9 @@ const Beneficiary = ({ navigation }) => {
                   {formik.errors.Bank_Address}
                 </Text>
               ) : null}
-                          </FormControl>
+            </FormControl>
             <FormControl>
-
-              {/* IFSC Code */}
+     
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Swift Code
@@ -362,9 +320,7 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="SKUASS12345"
                 color="black"
-              
                 fontSize={17}
-               
                 onChangeText={formik.handleChange("swiftcode")}
                 onBlur={formik.handleBlur("swiftcode")}
                 value={formik.values.swiftcode}
@@ -380,7 +336,7 @@ const Beneficiary = ({ navigation }) => {
                   {formik.errors.swiftcode}
                 </Text>
               ) : null}
-                          </FormControl>
+            </FormControl>
             <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
@@ -405,9 +361,9 @@ const Beneficiary = ({ navigation }) => {
                   <Picker.Item label="Bsb" value="Bsb" />
                 </Picker>
               </View>
-              </FormControl>
+            </FormControl>
             <FormControl>
-              {/* IBAN */}
+          
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   {selectedcode}
@@ -424,8 +380,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder={"ABCDEFGHIJ123458923"}
                 color="black"
-              
-               
                 fontSize={17}
                 onChangeText={formik.handleChange("iban")}
                 onBlur={formik.handleBlur("iban")}
@@ -461,7 +415,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="Account Holder Name"
                 color="black"
-              
                 fontSize={17}
                 onChangeText={formik.handleChange("Ac_Holder_Name")}
                 onBlur={formik.handleBlur("Ac_Holder_Name")}
@@ -496,7 +449,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="Account Number"
                 color="black"
-              
                 keyboardType="number-pad"
                 fontSize={17}
                 onChangeText={formik.handleChange("Ac_Number")}
@@ -513,8 +465,9 @@ const Beneficiary = ({ navigation }) => {
                 >
                   {formik.errors.Ac_Number}
                 </Text>
-              ) : null}            </FormControl>
-              <FormControl>
+              ) : null}
+            </FormControl>
+            <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Country
@@ -541,7 +494,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="State"
                 color="black"
-              
                 fontSize={17}
                 onChangeText={formik.handleChange("State")}
                 onBlur={formik.handleBlur("State")}
@@ -558,8 +510,10 @@ const Beneficiary = ({ navigation }) => {
                   {formik.errors.State}
                 </Text>
               ) : null}
-                      </FormControl>
-            <FormControl>    <FormControl.Label paddingY={2}>
+            </FormControl>
+            <FormControl>
+           
+              <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   City
                 </Text>
@@ -575,7 +529,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="City"
                 color="black"
-              
                 fontSize={17}
                 onChangeText={formik.handleChange("City")}
                 onBlur={formik.handleBlur("City")}
@@ -615,7 +568,6 @@ const Beneficiary = ({ navigation }) => {
                 padding={3}
                 placeholder="Address"
                 color="black"
-              
                 fontSize={17}
                 onChangeText={formik.handleChange("Address")}
                 onBlur={formik.handleBlur("Address")}
@@ -631,8 +583,9 @@ const Beneficiary = ({ navigation }) => {
                 >
                   {formik.errors.Address}
                 </Text>
-              ) : null}            </FormControl>
-              <FormControl>
+              ) : null}
+            </FormControl>
+            <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Routing Number
@@ -658,7 +611,6 @@ const Beneficiary = ({ navigation }) => {
                 onChangeText={formik.handleChange("routing_number")}
                 onBlur={formik.handleBlur("routing_number")}
                 value={formik.values.routing_number}
-              
                 fontSize={17}
                 borderBottomColor="#0B0464"
               />

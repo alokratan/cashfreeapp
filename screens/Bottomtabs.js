@@ -110,7 +110,7 @@ function Bottomtabs() {
       <Tab.Screen
         name="recipient"
         options={{
-          title: "Transactions",
+          title: "Order Status",
           headerTintColor: 'white', // Set the text color to white
           headerStyle: {
             backgroundColor: '#5521C2', // Set your desired color here
