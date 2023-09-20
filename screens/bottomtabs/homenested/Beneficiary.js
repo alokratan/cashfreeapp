@@ -19,70 +19,64 @@ import {
 } from "native-base";
 import { ToastAndroid } from "react-native";
 import React, { useState, useEffect } from "react";
+import { View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 // import CON from "../country.json";
+import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";
 import { baseurl, baseurl2 } from "../../../baseurl";
 import { MaterialIcons, Ionicons, FontAwesome5 } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import CountryPicker from "../../components/CountryPicker";
 import Coundet from "../../../country.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CountryPicker from "../../components/CountryPicker";
-
-const Remitter = ({ navigation }) => {
-  const [show, setShow] = useState(false);
-  const [show2, setShow2] = useState(false);
-  const [date, setDate] = useState(new Date());
-  const [countries, setCountries] = useState(Coundet);
-  const [selectedCountry, setSelectedCountry] = useState("");
+const Beneficiary = ({ navigation }) => {
   const [valueuid, setValueuid] = useState("");
+  const [show, setShow] = useState(false);
+  const [accountnumber, setAccountnumber] = useState("");
+  const [accountholdername, setAccountholdername] = useState("");
+  const [bankname, setBankname] = useState("");
+  const [bankaddress, setBankaddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [address, setAddress] = useState("");
+  const [swiftcode, setSwiftcode] = useState("");
+  const [routigno, setRoutigno] = useState("");
+  const [account_Type, setAccount_Type] = useState("");
+  const [ibancode, setIbancode] = useState("");
+  const [country, setCountry] = useState("");
+  const [country2, setCountry2] = useState("");
+
+  const [coun, setCoun] = useState("");
+  const [selectedcode, setSelectedcode] = useState("Iban");
+  const [countries, setCountries] = useState(Coundet);
+
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedBankCountry, setSelectedBankCountry] = useState("");
 
   const formik = useFormik({
     initialValues: {
-      fullname: "",
-      email: "",
-      phone: "",
-      // dob: "",
-      pannumber: "",
-      aadharnumber: "",
-      // country: "",
-      state: "",
-      city: "",
-      address: "",
-      bankname: "",
-      bankcode: "",
-      accountnumber: "",
-      ifsc: "",
-      postalcode: "",
+      Bank_Name: "",
+      // Bank_Country: "IN",
+      Bank_Address: "",
+      iban: "",
+      Ac_Holder_Name: "",
+      Ac_Number: "",
+      // Country: "IN",
+      State: "",
+      City: "",
+      Address: "",
+      swiftcode: "",
+      postal_code: "",
+      routing_number: "",
     },
     validationSchema: Yup.object().shape({
-      fullname: Yup.string()
+      Ac_Holder_Name: Yup.string()
         .min(3, "Too Short!")
         .max(50, "Too Long!")
         .required("Required"),
-      email: Yup.string()
-        .matches(
-          /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,3}$/,
-          "Invalid email"
-        )
-        .min(5, "Too Short!")
-        .max(50, "Too Long!")
-        .required("Required"),
-      phone: Yup.string()
-        .required("Required")
-        .matches(/^[6-9]\d{9}/, "Invalid Phone number")
-        .max(10, "Invalid Phone number"),
 
-      // dob: Yup.string().required("Required"),
-      pannumber: Yup.string()
-        .required("Required")
-        .matches(/^[A-Z]{5}\d{4}[A-Z]$/, "Invalid PAN card number"), // Add regex for PAN card
-
-      aadharnumber: Yup.string()
-        .required("Required")
-        .matches(/^\d{12}$/, "Aadhaar number must be exactly 12 digits long"),
-      state: Yup.string()
+      State: Yup.string()
         .matches(/^[A-Za-z0-9 .,-]*$/, "Invalid characters")
         .min(3, "Too Short!")
         .max(200, "Too Long!")
@@ -92,64 +86,118 @@ const Remitter = ({ navigation }) => {
         .min(3, "Too Short!")
         .max(200, "Too Long!")
         .required("Required"),
-      address: Yup.string()
+      Address: Yup.string()
         .min(3, "Too Short!")
         .max(200, "Too Long!")
         .required("Required"),
-      bankname: Yup.string()
+      Bank_Name: Yup.string()
         .min(3, "Too Short!")
         .max(200, "Too Long!")
         .required("Required"),
-      bankcode: Yup.string().required("Required"),
-      accountnumber: Yup.string()
+      Bank_Address: Yup.string()
+        .min(3, "Too Short!")
+        .max(200, "Too Long!")
+        .required("Required"),
+      Ac_Number: Yup.string()
         .required("Required")
         .matches(/^[0-9-]*$/, "Invalid Account Number"),
-      ifsc: Yup.string().required("Required"),
-      // .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC Number"),
-      postalcode: Yup.string()
+      swiftcode: Yup.string()
+        .required("Required")
+        .matches(/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/, "Invalid Swift Number"),
+      iban: Yup.string()
+        .required("Required")
+        .min(6, "Too Short!")
+        .max(20, "Too Long!")
+        .matches(/^[a-zA-Z0-9]*$/, "Invalid Iban Number"),
+
+      routing_number: Yup.string()
         .required("Required")
         .min(6, "Too Short!")
         .max(15, "Too Long!"),
+        // .matches(/^\\d*$/, "Invalid Routing Number"),
+      postal_code: Yup.string()
+        .required("Required")
+        .min(6, "Too Short!")
+        .max(8, "Too Long!"),
     }),
     onSubmit: (values) => {
       // myremitterfn(values);
-      myremitterfnvin(values);
-      console.log(values, date, selectedCountry);
+      mybeneffnvin(values);
+
       // resetForm({ values: "" });
     },
   });
-  const showdatafn = (e) => {
-    console.log(e);
-  };
- useEffect(()=>{
-  AsyncStorage.getItem("uid").then((value) => {
-    console.log(value)
-    setValueuid(value);
-  });
- },[])
 
-  const myremitterfnvin = async (val) => {
+  const registerfn2 = async (val) => {
+    console.log(
+      bankname,
+      selectedBankCountry,
+      bankaddress,
+      swiftcode,
+      ibancode,
+      accountholdername,
+      accountnumber,
+      selectedCountry,
+      state,
+      city,
+      address,
+      routigno
+    );
     ToastAndroid.show("Please Wait..", 2000);
+  };
 
+  const handleselectcode = (itemValue) => {
+    setSelectedcode(itemValue);
+  };
+  const handleChangebankcountry = (itemValue) => {
+    setSelectedBankCountry(itemValue);
+  };
+  const handleChangecountry = (itemValue) => {
+    setSelectedCountry(itemValue);
+  };
+
+  useEffect(() => {
+    AsyncStorage.getItem("uid").then((value) => {
+      console.log(value);
+      setValueuid(value);
+    });
+  }, []);
+
+  const mybeneffnvin = async (val) => {
+    ToastAndroid.show("Please Wait..", 2000);
+    const values = {
+      Ac_Holder_Name: val.Ac_Holder_Name,
+      Ac_Number: val.Ac_Number,
+      Bank_Name: val.Bank_Name,
+      Country: selectedCountry,
+      State: val.State,
+      City: val.City,
+      Address: val.Address,
+      Ifsc_Code: val.swiftcode,
+      Bank_Country: selectedBankCountry,
+      Bank_Address: val.Bank_Address,
+      iban: val.iban,
+      routing_number: val.routing_number,
+      postal_code: val.postal_code,
+      registered_userid: valueuid,
+    };
+    console.log(values);
     await axios
-      .post(`${baseurl2}/remitterr`, {
-        full_name: val.fullname,
-        email: val.email,
-        phoneno: val.phone,
-        nationality: selectedCountry,
-        bankname: val.bankname,
-        accountno: val.accountnumber,
-        ifsccode: val.ifsc,
-        panno: val.pannumber,
-        aadharno: val.aadharnumber,
-        postalcode: val.postalcode,
-        bankcode: val.bankcode,
-        state: val.state,
-        city: val.city,
-        address: val.address,
+      .post(`${baseurl2}/beneficiaryr`, {
+        Ac_Holder_Name: val.Ac_Holder_Name,
+        Ac_Number: val.Ac_Number,
+        Bank_Name: val.Bank_Name,
+        Country: selectedCountry,
+        State: val.State,
+        City: val.City,
+        Address: val.Address,
+        swiftcode: val.swiftcode,
+        Bank_Country: selectedBankCountry,
+        Bank_Address: val.Bank_Address,
+        iban: val.iban,
+        routing_number: val.routing_number,
+        postal_code: val.postal_code,
         registered_userid: valueuid,
-        purpose: "EDUCATION",
-        dob: date,
       })
 
       .then((res) => {
@@ -157,7 +205,10 @@ const Remitter = ({ navigation }) => {
         console.log(res.data);
         ToastAndroid.show(res.data.message, 2000);
         if (res.data.statuscode === 1) {
-          AsyncStorage.setItem("remitterid", JSON.stringify(res.data.remitter_id));
+          AsyncStorage.setItem(
+            "remitterid",
+            JSON.stringify(res.data.remitter_id)
+          );
           setTimeout(() => {
             navigation.navigate("viewbenef");
           }, 1000);
@@ -169,61 +220,12 @@ const Remitter = ({ navigation }) => {
         ToastAndroid.show(error.response.data.message, 2000);
       });
   };
-
-  //   const myremitterfn=async(val)=>{
-  //     ToastAndroid.show("Please Wait..", 2000);
-  //     await axios
-  //       .post(`${baseurl}/remitter`, {
-
-  //     partyname: val.fullname,
-  //     email: val.email,
-  //     mobilenumber: val.phone,
-  //     dob:date,
-  //     pannumber: val.pannumber,
-  //     adhaar: val.aadharnumber,
-  //     nationality: selectedCountry,
-  //     partystate: val.state,
-  //     partycity: val.city,
-  //     partyaddress: val.address,
-  //     bankname: val.bankname,
-  //     bankcode: val.bankcode,
-  //     accountnumber: val.accountnumber,
-  //     ifsccode: val.ifsc,
-  //     postalcode: val.postalcode,
-  // })
-
-  //       .then((res) => {
-  //         console.log(res.data.message);
-  //         console.log(res.data);
-
-  //         ToastAndroid.show(res.data.message, 2000);
-
-  //       })
-  //       .catch((error) => {
-  //         console.log(error.response.data.error);
-  //         console.log(error.response.data);
-  //         ToastAndroid.show(error.response.data.error, 2000);
-  //       });
-
-  //   }
-
-  // console.log(date);
-
-  const handleChange = (itemValue) => {
-    setSelectedCountry(itemValue);
-    console.log(itemValue);
+  const countryfn = (e) => {
+    setCountry(e);
   };
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios"); // For iOS, show the picker again on confirmation
-    setDate(currentDate);
+  const countryfn2 = (e) => {
+    setCountry2(e);
   };
-
-  const showDatepicker = () => {
-    setShow(true);
-  };
-
   return (
     <>
       <StatusBar
@@ -231,6 +233,7 @@ const Remitter = ({ navigation }) => {
         backgroundColor="#5521C2"
         barStyle="light-content"
       />
+
       <Box flex={1} justifyContent="space-between" safeAreaTop bg="white">
         <HStack
           bg={"#5521C2"}
@@ -248,359 +251,13 @@ const Remitter = ({ navigation }) => {
           </Pressable>
 
           <Heading color="white" paddingY={5} bold fontSize={24}>
-            Create Remitter
+            Create Beneficiary
           </Heading>
         </HStack>
-
         <ScrollView>
           <VStack paddingX={5} space={6} pt="6">
             <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Full Name
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                padding={3}
-                placeholder="Full Name"
-                color="black"
-                fontSize={17}
-                onChangeText={formik.handleChange("fullname")}
-                onBlur={formik.handleBlur("fullname")}
-                value={formik.values.fullname}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.fullname && formik.touched.fullname ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.fullname}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Email
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                InputRightElement={
-                  <Box paddingX={2}>
-                    <MaterialIcons name="email" size={24} color="#0B0464" />
-                  </Box>
-                }
-                padding={3}
-                placeholder="user@gmail.com"
-                color="black"
-                fontSize={17}
-                keyboardType="email-address"
-                onChangeText={formik.handleChange("email")}
-                onBlur={formik.handleBlur("email")}
-                value={formik.values.email}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.email && formik.touched.email ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.email}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Phone Number
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                InputRightElement={
-                  <Box paddingX={2}>
-                    <Ionicons name="call" size={24} color="#0B0464" />
-                  </Box>
-                }
-                padding={3}
-                placeholder="9845984954"
-                color="black"
-                fontSize={17}
-                onChangeText={formik.handleChange("phone")}
-                onBlur={formik.handleBlur("phone")}
-                value={formik.values.phone}
-                keyboardType="phone-pad"
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.phone && formik.touched.phone ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.phone}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Date Of Birth
-                </Text>
-              </FormControl.Label>
-              <Pressable
-                bg="gray.100"
-                // _focus={{
-                //   bg: "purple.50",
-                //   borderBottomWidth: 2,
-                //   borderWidth: 0,
-                //   borderColor: "#5521C2",
-                // }}
-                // InputRightElement={
-                //   <Box paddingX={2}>
-                //     <Ionicons name="call" size={24} color="black" />
-                //   </Box>
-                // }
-                padding={4}
-                onPress={showDatepicker}
-                placeholder="834989384"
-                color="black"
-                value={date}
-                rounded={5}
-                fontSize={17}
-                borderBottomColor="#0B0464"
-              >
-                {show2 ? (
-                  <Text fontSize={17}>Select DOB</Text>
-                ) : (
-                  <Text fontSize={17}>{date.toISOString().split("T")[0]}</Text>
-                )}
-
-                {/* <Button onPress={showDatepicker} title="Pick a date" /> */}
-                {show && (
-                  <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode="date" // Set mode to 'date'
-                    is24Hour={true}
-                    display="default"
-                    onChange={onChange}
-                  />
-                )}
-              </Pressable>
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Pan Number
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                padding={3}
-                placeholder="Pan Number"
-                color="black"
-                fontSize={17}
-                onChangeText={formik.handleChange("pannumber")}
-                onBlur={formik.handleBlur("pannumber")}
-                value={formik.values.pannumber}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.pannumber && formik.touched.pannumber ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.pannumber}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Aadhaar Number
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                padding={3}
-                placeholder="Aadhaar Number"
-                color="black"
-                keyboardType="phone-pad"
-                fontSize={17}
-                onChangeText={formik.handleChange("aadharnumber")}
-                onBlur={formik.handleBlur("aadharnumber")}
-                value={formik.values.aadharnumber}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.aadharnumber && formik.touched.aadharnumber ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.aadharnumber}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Nationality
-                </Text>
-              </FormControl.Label>
-              <CountryPicker
-                selectedCountry={selectedCountry}
-                country={countries}
-                handleChanges={handleChange}
-              />
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  State
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                padding={3}
-                placeholder="State"
-                color="black"
-                fontSize={17}
-                onChangeText={formik.handleChange("state")}
-                onBlur={formik.handleBlur("state")}
-                value={formik.values.state}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.state && formik.touched.state ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.state}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  City
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                padding={3}
-                placeholder="City"
-                color="black"
-                fontSize={17}
-                onChangeText={formik.handleChange("city")}
-                onBlur={formik.handleBlur("city")}
-                value={formik.values.city}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.city && formik.touched.city ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.city}
-                </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
-              <FormControl.Label paddingY={2}>
-                <Text fontWeight={600} fontSize={17}>
-                  Address
-                </Text>
-              </FormControl.Label>
-              <Input
-                variant="filled"
-                _focus={{
-                  bg: "purple.50",
-                  borderBottomWidth: 2,
-                  borderWidth: 0,
-                  borderColor: "#5521C2",
-                }}
-                padding={3}
-                placeholder="Address"
-                color="black"
-                fontSize={17}
-                onChangeText={formik.handleChange("address")}
-                onBlur={formik.handleBlur("address")}
-                value={formik.values.address}
-                borderBottomColor="#0B0464"
-              />
-              {formik.errors.address && formik.touched.address ? (
-                <Text
-                  paddingLeft={2}
-                  fontSize="sm"
-                  color="danger.500"
-                  alignSelf="flex-start"
-                >
-                  {formik.errors.address}
-                </Text>
-              ) : null}
-            </FormControl>
-
-            <Divider marginY={10} />
-            <FormControl>
+              {/* Bank Name */}
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
                   Bank Name
@@ -615,29 +272,45 @@ const Remitter = ({ navigation }) => {
                   borderColor: "#5521C2",
                 }}
                 padding={3}
-                placeholder="State Bank of India"
+                placeholder="Bank Name"
                 color="black"
+              
                 fontSize={17}
-                onChangeText={formik.handleChange("bankname")}
-                onBlur={formik.handleBlur("bankname")}
-                value={formik.values.bankname}
+                onChangeText={formik.handleChange("Bank_Name")}
+                onBlur={formik.handleBlur("Bank_Name")}
+                value={formik.values.Bank_Name}
                 borderBottomColor="#0B0464"
               />
-              {formik.errors.bankname && formik.touched.bankname ? (
+              {formik.errors.Bank_Name && formik.touched.Bank_Name ? (
                 <Text
                   paddingLeft={2}
                   fontSize="sm"
                   color="danger.500"
                   alignSelf="flex-start"
                 >
-                  {formik.errors.bankname}
+                  {formik.errors.Bank_Name}
                 </Text>
               ) : null}
             </FormControl>
             <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
-                  Bank Code
+                  Bank Country
+                </Text>
+              </FormControl.Label>
+             
+              <CountryPicker
+                selectedCountry={selectedBankCountry}
+                country={countries}
+                handleChanges={handleChangebankcountry}
+              />
+                          </FormControl>
+            
+              {/* Bank Address */}
+              <FormControl>
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Bank Address
                 </Text>
               </FormControl.Label>
               <Input
@@ -649,23 +322,160 @@ const Remitter = ({ navigation }) => {
                   borderColor: "#5521C2",
                 }}
                 padding={3}
-                placeholder="Bank Code"
+                placeholder="Bank Address"
                 color="black"
-                keyboardType="phone-pad"
+              
                 fontSize={17}
-                onChangeText={formik.handleChange("bankcode")}
-                onBlur={formik.handleBlur("bankcode")}
-                value={formik.values.bankcode}
+                onChangeText={formik.handleChange("Bank_Address")}
+                onBlur={formik.handleBlur("Bank_Address")}
+                value={formik.values.Bank_Address}
                 borderBottomColor="#0B0464"
               />
-              {formik.errors.bankcode && formik.touched.bankcode ? (
+              
+              {formik.errors.Bank_Address && formik.touched.Bank_Address ? (
                 <Text
                   paddingLeft={2}
                   fontSize="sm"
                   color="danger.500"
                   alignSelf="flex-start"
                 >
-                  {formik.errors.bankcode}
+                  {formik.errors.Bank_Address}
+                </Text>
+              ) : null}
+                          </FormControl>
+            <FormControl>
+
+              {/* IFSC Code */}
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Swift Code
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                padding={3}
+                placeholder="SKUASS12345"
+                color="black"
+              
+                fontSize={17}
+               
+                onChangeText={formik.handleChange("swiftcode")}
+                onBlur={formik.handleBlur("swiftcode")}
+                value={formik.values.swiftcode}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.swiftcode && formik.touched.swiftcode ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.swiftcode}
+                </Text>
+              ) : null}
+                          </FormControl>
+            <FormControl>
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Select Code
+                </Text>
+              </FormControl.Label>
+              <View>
+                <Picker
+                  style={{
+                    borderRadius: 100,
+                    marginBottom: 20,
+                    backgroundColor: "#F5F5F5",
+                    color: "black",
+                  }}
+                  selectedValue={selectedcode}
+                  onValueChange={handleselectcode}
+                  dropdownIconColor="black"
+                >
+                  <Picker.Item label="Iban" value="Iban" />
+                  <Picker.Item label="Transit" value="Transit" />
+                  <Picker.Item label="Sort" value="Sort" />
+                  <Picker.Item label="Bsb" value="Bsb" />
+                </Picker>
+              </View>
+              </FormControl>
+            <FormControl>
+              {/* IBAN */}
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  {selectedcode}
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                padding={3}
+                placeholder={"ABCDEFGHIJ123458923"}
+                color="black"
+              
+               
+                fontSize={17}
+                onChangeText={formik.handleChange("iban")}
+                onBlur={formik.handleBlur("iban")}
+                value={formik.values.iban}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.iban && formik.touched.iban ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.iban}
+                </Text>
+              ) : null}
+            </FormControl>
+            <FormControl>
+              {/* Account Holder Name */}
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Account Holder Name
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                padding={3}
+                placeholder="Account Holder Name"
+                color="black"
+              
+                fontSize={17}
+                onChangeText={formik.handleChange("Ac_Holder_Name")}
+                onBlur={formik.handleBlur("Ac_Holder_Name")}
+                value={formik.values.Ac_Holder_Name}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.Ac_Holder_Name && formik.touched.Ac_Holder_Name ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.Ac_Holder_Name}
                 </Text>
               ) : null}
             </FormControl>
@@ -683,36 +493,41 @@ const Remitter = ({ navigation }) => {
                   borderWidth: 0,
                   borderColor: "#5521C2",
                 }}
-                // InputRightElement={
-                //   <Box paddingX={2}>
-                //     <Ionicons name="call" size={24} color="black" />
-                //   </Box>
-                // }
                 padding={3}
-                placeholder="834989384"
+                placeholder="Account Number"
                 color="black"
-                keyboardType="phone-pad"
-                onChangeText={formik.handleChange("accountnumber")}
-                onBlur={formik.handleBlur("accountnumber")}
-                value={formik.values.accountnumber}
+              
+                keyboardType="number-pad"
                 fontSize={17}
+                onChangeText={formik.handleChange("Ac_Number")}
+                onBlur={formik.handleBlur("Ac_Number")}
+                value={formik.values.Ac_Number}
                 borderBottomColor="#0B0464"
               />
-              {formik.errors.accountnumber && formik.touched.accountnumber ? (
+              {formik.errors.Ac_Number && formik.touched.Ac_Number ? (
                 <Text
                   paddingLeft={2}
                   fontSize="sm"
                   color="danger.500"
                   alignSelf="flex-start"
                 >
-                  {formik.errors.accountnumber}
+                  {formik.errors.Ac_Number}
                 </Text>
-              ) : null}
-            </FormControl>
-            <FormControl>
+              ) : null}            </FormControl>
+              <FormControl>
               <FormControl.Label paddingY={2}>
                 <Text fontWeight={600} fontSize={17}>
-                  IFSC Code
+                  Country
+                </Text>
+              </FormControl.Label>
+              <CountryPicker
+                selectedCountry={selectedCountry}
+                country={countries}
+                handleChanges={handleChangecountry}
+              />
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  State
                 </Text>
               </FormControl.Label>
               <Input
@@ -724,22 +539,137 @@ const Remitter = ({ navigation }) => {
                   borderColor: "#5521C2",
                 }}
                 padding={3}
-                placeholder="SBIN000XXXX"
+                placeholder="State"
                 color="black"
+              
                 fontSize={17}
-                onChangeText={formik.handleChange("ifsc")}
-                onBlur={formik.handleBlur("ifsc")}
-                value={formik.values.ifsc}
+                onChangeText={formik.handleChange("State")}
+                onBlur={formik.handleBlur("State")}
+                value={formik.values.State}
                 borderBottomColor="#0B0464"
               />
-              {formik.errors.ifsc && formik.touched.ifsc ? (
+              {formik.errors.State && formik.touched.State ? (
                 <Text
                   paddingLeft={2}
                   fontSize="sm"
                   color="danger.500"
                   alignSelf="flex-start"
                 >
-                  {formik.errors.ifsc}
+                  {formik.errors.State}
+                </Text>
+              ) : null}
+                      </FormControl>
+            <FormControl>    <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  City
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                padding={3}
+                placeholder="City"
+                color="black"
+              
+                fontSize={17}
+                onChangeText={formik.handleChange("City")}
+                onBlur={formik.handleBlur("City")}
+                value={formik.values.City}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.City && formik.touched.City ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.City}
+                </Text>
+              ) : null}
+            </FormControl>
+            <FormControl>
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Address
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <MaterialIcons name="email" size={24} color="#0B0464" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="Address"
+                color="black"
+              
+                fontSize={17}
+                onChangeText={formik.handleChange("Address")}
+                onBlur={formik.handleBlur("Address")}
+                value={formik.values.Address}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.Address && formik.touched.Address ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.Address}
+                </Text>
+              ) : null}            </FormControl>
+              <FormControl>
+              <FormControl.Label paddingY={2}>
+                <Text fontWeight={600} fontSize={17}>
+                  Routing Number
+                </Text>
+              </FormControl.Label>
+              <Input
+                variant="filled"
+                _focus={{
+                  bg: "purple.50",
+                  borderBottomWidth: 2,
+                  borderWidth: 0,
+                  borderColor: "#5521C2",
+                }}
+                // InputRightElement={
+                //   <Box paddingX={2}>
+                //     <Ionicons name="call" size={24} color="black" />
+                //   </Box>
+                // }
+                padding={3}
+                placeholder="834989384"
+                color="black"
+                keyboardType="phone-pad"
+                onChangeText={formik.handleChange("routing_number")}
+                onBlur={formik.handleBlur("routing_number")}
+                value={formik.values.routing_number}
+              
+                fontSize={17}
+                borderBottomColor="#0B0464"
+              />
+              {formik.errors.routing_number && formik.touched.routing_number ? (
+                <Text
+                  paddingLeft={2}
+                  fontSize="sm"
+                  color="danger.500"
+                  alignSelf="flex-start"
+                >
+                  {formik.errors.routing_number}
                 </Text>
               ) : null}
             </FormControl>
@@ -762,19 +692,19 @@ const Remitter = ({ navigation }) => {
                 color="black"
                 keyboardType="phone-pad"
                 fontSize={17}
-                onChangeText={formik.handleChange("postalcode")}
-                onBlur={formik.handleBlur("postalcode")}
-                value={formik.values.postalcode}
+                onChangeText={formik.handleChange("postal_code")}
+                onBlur={formik.handleBlur("postal_code")}
+                value={formik.values.postal_code}
                 borderBottomColor="#0B0464"
               />
-              {formik.errors.postalcode && formik.touched.postalcode ? (
+              {formik.errors.postal_code && formik.touched.postal_code ? (
                 <Text
                   paddingLeft={2}
                   fontSize="sm"
                   color="danger.500"
                   alignSelf="flex-start"
                 >
-                  {formik.errors.postalcode}
+                  {formik.errors.postal_code}
                 </Text>
               ) : null}
             </FormControl>
@@ -802,4 +732,4 @@ const Remitter = ({ navigation }) => {
   );
 };
 
-export default Remitter;
+export default Beneficiary;

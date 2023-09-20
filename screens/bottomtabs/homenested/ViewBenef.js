@@ -14,13 +14,12 @@ import {
   Modal,
 } from "native-base";
 import React, { useEffect, useState } from "react";
-import { ToastAndroid, View, RefreshControl } from "react-native"; // Added RefreshControl
-import { remitvin } from "../../../userapi";
+import { View, RefreshControl, ToastAndroid } from "react-native"; // Added RefreshControl
+import { benefvin } from "../../../userapi";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ViewRemit = ({ navigation }) => {
-  const [selectedremit, setSelectedremit] = useState("");
-  const [selectremit, setSelectremit] = useState([]);
+const ViewBenef = ({ navigation }) => {
+  const [selectbenef, setSelectbenef] = useState([]);
   const [select, setSelect] = useState(null);
   const [selectdata, setSelectdata] = useState([]);
   const [show, setShow] = useState(false);
@@ -30,52 +29,50 @@ const ViewRemit = ({ navigation }) => {
     setRefreshing(true);
 
     try {
-      const response = await remitvin();
+      const response = await benefvin();
       if (response && response.data) {
-        console.log("All Remitters Fetch Successfully...")
-        setSelectremit(response.data);
+        console.log("All Beneficiary Fetch Successfully...")
+        setSelectbenef(response.data);
       }
     } catch (error) {
-      console.error("Error fetching remitters:", error);
+      console.error("Error fetching Beneficiary:", error);
     }
 
     setRefreshing(false);
   };
 
   useEffect(() => {
-    // Fetch remitters when the component mounts
-    const fetchRemitters = async () => {
+    // Fetch Beneficiarys when the component mounts
+    const fetchBeneficiay = async () => {
       try {
-        const response = await remitvin();
+        const response = await benefvin();
         if (response && response.data) {
-          console.log("All Remitters Fetch Successfully...")
-          setSelectremit(response.data);
+          console.log("All Beneficiary Fetch Successfully...")
+          setSelectbenef(response.data);
         }
       } catch (error) {
-        console.error("Error fetching remitters:", error);
+        console.error("Error fetching Beneficiary:", error);
       }
     };
-    fetchRemitters();
+    fetchBeneficiay();
     
   }, []);
 
   const continuefn=()=>{
-    ToastAndroid.show("Please Wait...", 2000);
-    console.log("Remitter id:",select)
+    console.log("Beneficiary id:",select)
     if(select){
-      AsyncStorage.setItem('remitterid', JSON.stringify(select));
+      AsyncStorage.setItem('beneficiaryid', JSON.stringify(select));
       setTimeout(() => {
-        navigation.navigate("viewbenef");
+        navigation.navigate("order");
       }, 1000);
     }else{
-      ToastAndroid.show("Select Remitter , If have not remitter Create new", 2000);
+      ToastAndroid.show("Select Beneficiary , If have not Beneficiary Create new", 2000);
     }
-   
   }
 
   const viewfn = (ac) => {
     setSelectdata(JSON.stringify(ac));
-    console.log(ac.partyname);
+    console.log(ac.beneficiaryname);
     setShow(true);
   };
   return (
@@ -88,7 +85,7 @@ const ViewRemit = ({ navigation }) => {
       <Modal isOpen={show} onClose={() => setShow(false)}>
         <Box bg="white" w="80%" h="40%">
           <Modal.Header>
-            <Heading>Remitter Details</Heading>
+            <Heading>Beneficiary Details</Heading>
           </Modal.Header>
           <Modal.Body>
             <ScrollView>
@@ -114,7 +111,7 @@ const ViewRemit = ({ navigation }) => {
           </Pressable>
 
           <Heading color="white" paddingY={5} bold fontSize={24}>
-            Select Remitter
+            Select Beneficiary
           </Heading>
         </HStack>
 
@@ -127,11 +124,11 @@ const ViewRemit = ({ navigation }) => {
           }
         >
           <VStack paddingX={4}>
-            {selectremit.length > 0 ? (
-              selectremit.map((a) => (
-                <Pressable onPress={() => setSelect(a.partyid)} key={a.partyid}>
+            {selectbenef.length > 0 ? (
+              selectbenef.map((a) => (
+                <Pressable onPress={() => setSelect(a.beneficiaryid)} key={a.beneficiaryid}>
                   <HStack
-                    borderColor={select === a.partyid ? "#5521C2" : "gray.100"} // Change background color based on selected state
+                    borderColor={select === a.beneficiaryid ? "#5521C2" : "gray.100"} // Change background color based on selected state
                     justifyContent={"space-between"}
                     alignItems={"center"}
                     marginY={3}
@@ -141,7 +138,7 @@ const ViewRemit = ({ navigation }) => {
                     paddingX={4}
                   >
                     <Center>
-                      {select === a.partyid ? (
+                      {select === a.beneficiaryid ? (
                         <FontAwesome
                           name="check-circle"
                           color="#5521C2"
@@ -158,10 +155,10 @@ const ViewRemit = ({ navigation }) => {
 
                     <VStack w="65%">
                       <Text fontSize={20} bold textTransform={"capitalize"}>
-                        {a.partyname}
+                        {a.beneficiaryname}
                       </Text>
-                      <Text fontSize={15} textTransform={"lowercase"}>
-                        {a.email}
+                      <Text fontSize={15} textTransform={"capitalize"}>
+                        Ac No. : {a.beneficiaryaccountno}
                       </Text>
                     </VStack>
                     <HStack>
@@ -175,7 +172,7 @@ const ViewRemit = ({ navigation }) => {
             ) : (
               <Center flex={1} justifyContent={"center"} alignItems={"center"}  rounded={20} bg="white">
                 <Heading color="#0004" bold paddingY={3} paddingX={5}>
-                 No Remitter Found
+                 No Beneficiary Found
                 </Heading>
               </Center>
             )}
@@ -186,10 +183,10 @@ const ViewRemit = ({ navigation }) => {
           <Pressable
             justifyContent={"center"}
             alignItems={"center"}
-            onPress={() => navigation.navigate("remitter")}
+            onPress={() => navigation.navigate("beneficiary")}
           >
             <Text paddingY={2} fontSize={18} bold color="black">
-              Create New Remitter
+              Create New Beneficiary
             </Text>
           </Pressable>
 
@@ -201,6 +198,7 @@ const ViewRemit = ({ navigation }) => {
             marginBottom={24}
             rounded={10}
             onPress={continuefn}
+            // onPress={formik.handleSubmit}
             bg="black"
           >
             <Text marginY={1} color="white" bold fontSize={20}>
@@ -213,4 +211,4 @@ const ViewRemit = ({ navigation }) => {
   );
 };
 
-export default ViewRemit;
+export default ViewBenef;

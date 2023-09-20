@@ -1,7 +1,3 @@
-
-
-
-
 import {
   Box,
   Text,
@@ -21,12 +17,12 @@ import {
 } from "native-base";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { ToastAndroid } from "react-native";
-import { baseurl } from "../baseurl";
+import { baseurl, baseurl2 } from "../baseurl";
 
 const Login = ({ navigation }) => {
   const [show, setShow] = useState(false);
@@ -63,7 +59,6 @@ const Login = ({ navigation }) => {
     },
   });
 
- 
   const loginfn = async (values) => {
     ToastAndroid.show("Please Wait..", 2000);
     await axios
@@ -72,7 +67,7 @@ const Login = ({ navigation }) => {
         password: values.password,
       })
       .then((res) => {
-        console.log("hi this is id:",res.data.uid)
+        console.log("hi this is id:", res.data.uid);
         // storeData(res.data.uid)
         ToastAndroid.show(res.data.message, 2000);
         setTimeout(() => {
@@ -85,27 +80,20 @@ const Login = ({ navigation }) => {
       });
   };
 
-  const storeData = async (value) => {
-    try {
-      await AsyncStorage.setItem(uid, value);
-    } catch (e) {
-      console.log(e)
-    }
-  };
-
   const loginfnvin = async (values) => {
     await axios
-      .post(`https://geyeapp.consultit.co.in:8080/login`, {
+      .post(`${baseurl2}/login`, {
         userId: values.email,
         password: values.password,
       })
       .then((res) => {
-        console.log("hi this is id:",res.data)
+        console.log("hi this is id:", res.data);
         // storeData(res)
-        AsyncStorage.setItem('uid', res.data.uid);
+
         // console.log("Login res:",res.data.res.message);
         ToastAndroid.show(res.data.message, 2000);
         if (res.data.statuscode === 1) {
+          AsyncStorage.setItem("uid", res.data.uid);
           setTimeout(() => {
             navigation.navigate("bottomtabs");
           }, 1000);
@@ -144,7 +132,6 @@ const Login = ({ navigation }) => {
           </Text>
         </VStack>
         <ScrollView>
-      
           <VStack paddingX={5} space={6} pt="6">
             <FormControl isRequired>
               <FormControl.Label paddingY={2}>
@@ -171,7 +158,6 @@ const Login = ({ navigation }) => {
                 placeholder="user@gmail.com"
                 color="black"
                 fontSize={17}
-                
                 onChangeText={formik.handleChange("email")}
                 onBlur={formik.handleBlur("email")}
                 value={formik.values.email}
@@ -261,7 +247,7 @@ const Login = ({ navigation }) => {
               </Text>
             </Button>
           </VStack>
-     </ScrollView>
+        </ScrollView>
 
         <Center position={"relative"} top={5} zIndex={2}>
           <Text

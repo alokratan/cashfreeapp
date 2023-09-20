@@ -6,7 +6,7 @@ const CountryPicker = ({country,selectedCountry,handleChanges}) => {
   return (
     <View> 
       <Picker
-    style={{borderRadius:100,marginBottom:20, backgroundColor: '#F5F5F5', color: 'black'}} 
+    style={{borderRadius:100, backgroundColor: '#F5F5F5', color: 'black'}} 
       
         selectedValue={selectedCountry}
         onValueChange={handleChanges}
