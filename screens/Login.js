@@ -18,14 +18,18 @@ import {
 } from "native-base";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState } from "react";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { ToastAndroid } from "react-native";
 import { baseurl, baseurl2 } from "../baseurl";
+import * as LocalAuthentication from 'expo-local-authentication';
 
 const Login = ({ navigation }) => {
+
   const [show, setShow] = useState(false);
   const [isloading,setIsloading]=useState(false);
 
@@ -55,11 +59,35 @@ const Login = ({ navigation }) => {
     }),
     onSubmit: (values, { resetForm }) => {
       // loginfn(values);
-      loginfnvin(values);
+      
+      localauth(values);
       // console.log(values);
       resetForm({ values: "" });
     },
   });
+
+  const localauth=async (val)=>{
+
+    try {
+      const result = await LocalAuthentication.authenticateAsync()
+      console.log(result)
+      // const result = await auth.authenticateAsync();
+      if (result.success) {
+        console.log("The user has been successfully authenticated.");
+        ToastAndroid.show("Successfully Authenticated.", 2000);
+        loginfnvin(val);
+        // The user has been successfully authenticated.
+      } else {
+        // The user has not been successfully authenticated.
+        console.log("The user has not been successfully authenticated");
+        ToastAndroid.show("Authentication Failed , Please secure your device first. ", 2000);
+      }
+    } catch (error) {
+      // An error occurred during authentication.
+      console.log("haahahah")
+      console.log(error)
+    }
+  }
 
   const loginfn = async (values) => {
     ToastAndroid.show("Please Wait..", 2000);

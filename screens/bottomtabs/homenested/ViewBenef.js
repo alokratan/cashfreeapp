@@ -22,6 +22,7 @@ const ViewBenef = ({ navigation }) => {
   const [selectbenef, setSelectbenef] = useState([]);
   const [select, setSelect] = useState(null);
   const [selectdata, setSelectdata] = useState([]);
+  const [selectdata2, setSelectdata2] = useState();
   const [show, setShow] = useState(false);
   const [refreshing, setRefreshing] = useState(false); // Added refreshing state
 
@@ -57,7 +58,7 @@ const ViewBenef = ({ navigation }) => {
     fetchBeneficiay();
     
   }, []);
-
+  
   const continuefn=()=>{
     console.log("Beneficiary id:",select)
     if(select){
@@ -72,6 +73,7 @@ const ViewBenef = ({ navigation }) => {
 
   const viewfn = (ac) => {
     setSelectdata(JSON.stringify(ac));
+    setSelectdata2(ac)
     console.log(ac.beneficiaryname);
     setShow(true);
   };
@@ -89,7 +91,13 @@ const ViewBenef = ({ navigation }) => {
           </Modal.Header>
           <Modal.Body>
             <ScrollView>
-              <Text>{selectdata}</Text>
+             <VStack space={4} paddingY={4} >
+              <Text fontSize={20}>Beneficiary ID: {selectdata2 && selectdata2.beneficiaryid}</Text>
+              <Text fontSize={20}>Beneficiary Name: {selectdata2 && selectdata2.beneficiaryname}</Text>
+              <Text fontSize={20}>Account Number: {selectdata2 && selectdata2.beneficiaryaccountno}</Text>
+              <Text fontSize={20}>Bank Name: {selectdata2 && selectdata2.beneficiarybankname}</Text>
+              <Text fontSize={20}>Country: {selectdata2 && selectdata2.partycountry}</Text>
+              </VStack>
             </ScrollView>
           </Modal.Body>
         </Box>

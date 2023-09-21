@@ -23,6 +23,7 @@ const ViewRemit = ({ navigation }) => {
   const [selectremit, setSelectremit] = useState([]);
   const [select, setSelect] = useState(null);
   const [selectdata, setSelectdata] = useState([]);
+  const [selectdata2, setSelectdata2] = useState();
   const [show, setShow] = useState(false);
   const [refreshing, setRefreshing] = useState(false); // Added refreshing state
 
@@ -77,6 +78,7 @@ const ViewRemit = ({ navigation }) => {
   const viewfn = (ac) => {
     setSelectdata(JSON.stringify(ac));
     console.log(ac.partyname);
+    setSelectdata2(ac)
     setShow(true);
   };
   return (
@@ -92,8 +94,16 @@ const ViewRemit = ({ navigation }) => {
             <Heading>Remitter Details</Heading>
           </Modal.Header>
           <Modal.Body>
+         
             <ScrollView>
-              <Text>{selectdata}</Text>
+             <VStack space={4} paddingY={4} >
+              <Text fontSize={20}>Remitter ID: {selectdata2 && selectdata2.partyid}</Text>
+              <Text fontSize={20}>Remitter Name: {selectdata2 && selectdata2.partyname}</Text>
+              <Text fontSize={20}>Email ID: {selectdata2 && selectdata2.email}</Text>
+              <Text fontSize={20}>Phone Number: {selectdata2 && selectdata2.mobilenumber}</Text>
+              <Text fontSize={20}>Pan Number: {selectdata2 && selectdata2.pannumber}</Text>
+              <Text fontSize={20}>Country: {selectdata2 && selectdata2.nationality}</Text>
+              </VStack>
             </ScrollView>
           </Modal.Body>
         </Box>

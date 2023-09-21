@@ -176,7 +176,7 @@ const Beneficiary = ({ navigation }) => {
             JSON.stringify(res.data.remitter_id)
           );
           setTimeout(() => {
-            navigation.navigate("viewbenef");
+            navigation.navigate("order");
           }, 1000);
         }
       })
